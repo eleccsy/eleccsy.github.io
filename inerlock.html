@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>정·역회전 인터록 결선 실습 | 전기기능사 디지털 트윈</title>
+<style>
+:root{--bg:#0b1220;--panel:#121d30;--panel2:#18263b;--line:#2b3c55;--text:#eaf1fb;--muted:#a9bad0;--cyan:#38d9ff;--green:#45e0a2;--red:#ff657a;--amber:#ffc857}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(180deg,#0a1120,#101b2c);color:var(--text);font-family:system-ui,-apple-system,"Malgun Gothic",sans-serif;line-height:1.6}
+header{padding:28px max(18px,calc((100vw - 1240px)/2));background:linear-gradient(120deg,#142641,#102034);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:.12em;font-size:.78rem}h1{margin:.35rem 0;font-size:clamp(1.6rem,3vw,2.5rem);line-height:1.2}header p{color:var(--muted);max-width:900px;margin:.65rem 0 0}
+main{max-width:1240px;margin:auto;padding:22px 18px 60px}.section{margin:0 0 24px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}.section h2{margin:0;font-size:1.35rem}.sub{color:var(--muted);font-size:.9rem}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px}.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;min-width:0}.span-4{grid-column:span 4}.span-6{grid-column:span 6}.span-8{grid-column:span 8}.span-12{grid-column:span 12}
+h3{margin:0 0 8px;font-size:1.05rem}p{margin:.45rem 0}.muted{color:var(--muted)}.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:.78rem;color:var(--muted);margin:3px 4px 3px 0}.pill.good{color:var(--green);border-color:#286c59}.pill.warn{color:var(--amber);border-color:#745c25}.pill.bad{color:var(--red);border-color:#713545}
+.diagram{width:100%;height:auto;background:#f7fafc;border-radius:12px;display:block}.diagram text{font-family:Arial,sans-serif;fill:#172033}.diagram .wire{stroke:#1d2939;stroke-width:2.4;fill:none}.diagram .control{stroke:#1675d1;stroke-width:2.6;fill:none}.diagram .label{font-size:14px;font-weight:700}.diagram .small{font-size:11px}.diagram .device{fill:#fff;stroke:#1d2939;stroke-width:2}.diagram .contact{stroke:#1d2939;stroke-width:2.3;fill:none}
+.note{border-left:3px solid var(--cyan);padding:9px 12px;background:#10273a;border-radius:0 8px 8px 0;color:#d7e8f6}.danger{border-left-color:var(--red);background:#301c2a}.steps{padding-left:1.2rem}.steps li{margin:.35rem 0}.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}button,select{font:inherit}button{background:#20344f;color:var(--text);border:1px solid #405674;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:700}button:hover{filter:brightness(1.15)}button.primary{background:#087ba5;border-color:#19b8e5}button.active{outline:2px solid var(--cyan)}button.danger-btn{border-color:#8b3e4e;color:#ffb7c0}button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.model-wrap{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:#0b1422;min-height:420px}#scene{display:block;width:100%;height:470px;touch-action:none}.overlay{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;pointer-events:none;flex-wrap:wrap}.overlay span{background:#07101dcc;border:1px solid #3a4a61;border-radius:8px;padding:6px 9px;font-size:.8rem}.overlay .status{color:var(--green)}.controls{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.statusline{margin-top:12px;padding:11px 13px;border-radius:10px;background:#0b1727;border:1px solid var(--line);min-height:48px}.statusline.good{border-color:#286c59;color:#a7f5d6}.statusline.bad{border-color:#713545;color:#ffb7c0}.switches{display:flex;gap:8px;flex-wrap:wrap}.switches button{flex:1;min-width:145px}.checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.checkitem{display:flex;gap:8px;align-items:flex-start;background:#0d1828;padding:9px;border-radius:8px;color:#d7e2f1}.checkitem input{margin-top:5px;accent-color:var(--cyan)}.quiz-q{padding:12px;background:#0d1828;border-radius:10px;margin:10px 0}.quiz-q label{display:block;margin:5px 0;color:#d7e2f1}.answer{color:var(--green);font-weight:700}.footer{color:var(--muted);font-size:.82rem;border-top:1px solid var(--line);padding-top:16px}
+@media(max-width:850px){.span-4,.span-6,.span-8{grid-column:span 12}.model-wrap{min-height:350px}#scene{height:370px}.checklist{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">ELECTRICAL PRACTICE · DIGITAL TWIN</div>
+  <h1>정·역회전 인터록 결선 실습</h1>
+  <p>전기기능사 대비 이론 학습부터 회로 해석, 접점 동작 시각화, 3D 결선 체험까지 이어지는 웹 기반 실습실입니다. 가상 시뮬레이션이며 실제 전원·장비와 연결되지 않습니다.</p>
+</header>
+<main>
+<section class="section">
+ <div class="section-head"><h2>01. 이론 학습서</h2><span class="sub">핵심 개념 · 시험 포인트</span></div>
+ <div class="grid">
+  <article class="card span-4"><h3>정·역회전 원리</h3><p>3상 유도전동기의 회전 방향은 전원 3상 중 두 상의 순서를 바꾸면 반전됩니다. 정회전 접촉기 MC-F는 정상 상순서를, 역회전 접촉기 MC-R은 두 상을 교차한 상순서를 모터에 공급합니다.</p><span class="pill">주회로</span><span class="pill">상 교체</span></article>
+  <article class="card span-4"><h3>전기적 인터록</h3><p>MC-F 코일 회로에 MC-R의 b접점(NC), MC-R 코일 회로에 MC-F의 b접점(NC)을 직렬로 넣습니다. 한 접촉기가 동작하면 상대방 b접점이 열려 두 접촉기의 동시 투입을 막습니다.</p><span class="pill good">b접점 상호 연동</span></article>
+  <article class="card span-4"><h3>자기유지와 정지</h3><p>각 접촉기의 a접점(NO)을 기동 버튼과 병렬로 연결해 자기유지합니다. 정지 버튼 b접점은 공통 제어 전원 경로에 직렬로 넣어 어느 방향이든 정지할 수 있게 합니다.</p><span class="pill">a접점 = NO</span><span class="pill">b접점 = NC</span></article>
+  <article class="card span-12"><div class="note danger"><strong>안전 핵심:</strong> 인터록 누락 또는 고장 상태에서 정·역 접촉기가 동시에 닫히면 서로 다른 상이 직접 연결되어 상간 단락과 아크 위험이 발생할 수 있습니다. 실제 설비에서는 기계적 인터록, 적절한 과전류 보호, 무전압 확인 및 자격을 갖춘 감독이 필요합니다. 아래 오류 체험은 개념 학습용이며 실제 전기적 단락을 발생시키지 않습니다.</div></article>
+ </div>
+</section>
+
+<section class="section">
+ <div class="section-head"><h2>02. 회로도</h2><span class="sub">주회로와 제어회로를 구분해 읽기</span></div>
+ <div class="grid">
+  <article class="card span-6">
+   <h3>주회로 — 3상 전원과 상 교체</h3>
+   <svg class="diagram" viewBox="0 0 600 340" role="img" aria-label="정역회전 주회로 개념도">
+    <text x="20" y="27" class="label">3Φ 전원</text><text x="20" y="48" class="small">L1 L2 L3</text>
+    <path class="wire" d="M70 62 V110 M105 62 V110 M140 62 V110"/>
+    <path class="wire" d="M70 110 H245 M105 110 H245 M140 110 H245"/>
+    <rect class="device" x="185" y="78" width="100" height="65" rx="7"/><text x="235" y="101" text-anchor="middle" class="label">QF</text><text x="235" y="120" text-anchor="middle" class="small">차단기</text>
+    <path class="wire" d="M235 143 V170 H160 V198 M235 170 H420 V198"/>
+    <rect class="device" x="80" y="198" width="160" height="55" rx="7"/><text x="160" y="220" text-anchor="middle" class="label">MC-F 정회전</text><text x="160" y="239" text-anchor="middle" class="small">L1→U, L2→V, L3→W</text>
+    <rect class="device" x="340" y="198" width="190" height="55" rx="7"/><text x="435" y="220" text-anchor="middle" class="label">MC-R 역회전</text><text x="435" y="239" text-anchor="middle" class="small">L1/L3 두 상 교체</text>
+    <path class="wire" d="M160 253 V280 H300 M435 253 V280 H300 V300"/>
+    <circle cx="300" cy="309" r="22" fill="#e4f6ff" stroke="#1d2939" stroke-width="2"/><text x="300" y="313" text-anchor="middle" class="label">M</text>
+    <text x="20" y="328" class="small">※ 개념도: 실제 단자 번호와 보호기기 구성은 장비 도면을 따르세요.</text>
+   </svg>
+   <p class="muted">정회전과 역회전 접촉기 출력은 모터의 U·V·W 단자로 연결됩니다. 역회전 회로에서는 두 상을 교체하되, 결선 전 도면과 단자 표시를 반드시 대조합니다.</p>
+  </article>
+  <article class="card span-6">
+   <h3>제어회로 — 상호 b접점 인터록</h3>
+   <svg class="diagram" viewBox="0 0 600 340" role="img" aria-label="정역회전 제어회로 인터록 개념도">
+    <text x="24" y="25" class="label">제어 전원 L</text><text x="525" y="25" class="label">N</text>
+    <path class="control" d="M55 42 V310 M545 42 V310"/>
+    <text x="70" y="60" class="small">정회전 회로</text>
+    <path class="control" d="M55 90 H90 M130 90 H155 M200 90 H225 M270 90 H300 M350 90 H380 M430 90 H545"/>
+    <path class="contact" d="M90 82 L130 98"/><text x="110" y="76" text-anchor="middle" class="small">STOP b</text>
+    <path class="contact" d="M155 90 H170 M170 80 V100 M200 80 V100"/><text x="178" y="70" text-anchor="middle" class="small">FWD a</text>
+    <path class="contact" d="M225 90 H240 M240 80 V100 M270 80 V100"/><text x="248" y="120" text-anchor="middle" class="small">F 자기유지 a</text>
+    <path class="contact" d="M300 80 L350 100"/><text x="325" y="70" text-anchor="middle" class="small">MC-R b</text>
+    <circle cx="405" cy="90" r="18" fill="#fff" stroke="#1d2939" stroke-width="2"/><text x="405" y="94" text-anchor="middle" class="small">F</text>
+    <text x="70" y="170" class="small">역회전 회로</text>
+    <path class="control" d="M55 205 H90 M130 205 H155 M200 205 H225 M270 205 H300 M350 205 H380 M430 205 H545"/>
+    <path class="contact" d="M90 197 L130 213"/><text x="110" y="191" text-anchor="middle" class="small">STOP b</text>
+    <path class="contact" d="M155 205 H170 M170 195 V215 M200 195 V215"/><text x="178" y="185" text-anchor="middle" class="small">REV a</text>
+    <path class="contact" d="M225 205 H240 M240 195 V215 M270 195 V215"/><text x="248" y="235" text-anchor="middle" class="small">R 자기유지 a</text>
+    <path class="contact" d="M300 195 L350 215"/><text x="325" y="185" text-anchor="middle" class="small">MC-F b</text>
+    <circle cx="405" cy="205" r="18" fill="#fff" stroke="#1d2939" stroke-width="2"/><text x="405" y="209" text-anchor="middle" class="small">R</text>
+    <text x="70" y="275" class="small">F 코일 ON → MC-F b접점 개방 → R 코일 경로 차단</text>
+    <text x="70" y="294" class="small">R 코일 ON → MC-R b접점 개방 → F 코일 경로 차단</text>
+    <text x="70" y="322" class="small">※ 교육용 개념도이며 실제 결선은 해당 실습장 회로도 기준</text>
+   </svg>
+   <p class="muted">전기적 인터록은 상대 접촉기의 보조 b접점을 코일 회로에 직렬로 배치하는 것이 핵심입니다. 실제 회로에서는 기동·정지 및 자기유지 접점의 병렬·직렬 관계를 회로도에 따라 확인하세요.</p>
+  </article>
+ </div>
+</section>
+
+<section class="section">
+ <div class="section-head"><h2>03. 접점 동작 · 전류 흐름 시각화</h2><span class="sub">버튼을 눌러 논리 상태를 확인하세요</span></div>
+ <div class="card">
+  <div class="switches"><button id="fwdBtn" class="primary">▶ 정회전 기동</button><button id="revBtn" class="primary">◀ 역회전 기동</button><button id="stopBtn">■ 정지</button><button id="faultBtn" class="danger-btn">⚠ 인터록 누락 오류 보기</button></div>
+  <div id="logicStatus" class="statusline">정지 상태 — 두 접촉기 코일 OFF, 양쪽 b접점은 닫힘(NC)</div>
+  <div class="grid" style="margin-top:12px">
+   <div class="span-6 card" style="background:#0d1828"><h3>MC-F 정회전 접촉기</h3><p>주접점: <strong id="fMain">열림</strong> · 코일: <strong id="fCoil">OFF</strong></p><p>MC-F 보조 b접점(역회전 회로): <strong id="fNC">닫힘</strong></p><div class="pill" id="fPath">전류 흐름 없음</div></div>
+   <div class="span-6 card" style="background:#0d1828"><h3>MC-R 역회전 접촉기</h3><p>주접점: <strong id="rMain">열림</strong> · 코일: <strong id="rCoil">OFF</strong></p><p>MC-R 보조 b접점(정회전 회로): <strong id="rNC">닫힘</strong></p><div class="pill" id="rPath">전류 흐름 없음</div></div>
+  </div>
+  <p class="muted">모델은 실제 전류를 측정하지 않습니다. 색상과 상태 문구는 회로 논리를 설명하는 교육용 애니메이션입니다.</p>
+ </div>
+</section>
+
+<section class="section">
+ <div class="section-head"><h2>04. 하단 3D 디지털 트윈 실습</h2><span class="sub">PC: 드래그 회전 · 휠 확대 · WASD 이동 / 모바일: 터치 드래그 및 버튼</span></div>
+ <div class="model-wrap">
+  <canvas id="scene" aria-label="정역회전 인터록 3D 실습 모델"></canvas>
+  <div class="overlay"><span>3D 실습 모형 · 저전압 가상 환경</span><span class="status" id="sceneStatus">상태: 정지</span></div>
+ </div>
+ <div class="controls">
+  <button id="viewReset">시점 초기화</button><button id="viewTop">위에서 보기</button><button id="viewSide">측면 보기</button><button id="wireToggle" class="active">결선 표시 ON/OFF</button><button id="mobileLook">관찰점 이동 모드</button>
+ </div>
+ <div class="grid" style="margin-top:14px">
+  <article class="card span-6"><h3>결선 선택</h3><p class="muted">단자를 선택해 가상 점퍼 결선을 구성합니다. 이 데모의 3D 배선은 학습용 표현이며 실제 배선 안전성을 인증하지 않습니다.</p>
+   <div class="btnrow"><button id="selectF">MC-F 선택</button><button id="selectR">MC-R 선택</button><button id="selectU">모터 U 선택</button><button id="selectV">모터 V 선택</button><button id="selectW">모터 W 선택</button><button id="clearWires">결선 초기화</button></div>
+   <div id="wireStatus" class="statusline">단자 선택: 없음</div>
+  </article>
+  <article class="card span-6"><h3>오류 체험</h3><p>학습 시나리오를 선택하면 위험 원인과 점검 방법을 안내합니다. 실제 단락은 발생하지 않습니다.</p>
+   <div class="btnrow"><button id="errInterlock" class="danger-btn">인터록 누락</button><button id="errPhase" class="danger-btn">상 교체 오류</button><button id="errFix">정상 상태로 복귀</button></div>
+   <div id="errorStatus" class="statusline">정상 시나리오 — 정·역 동시 투입 방지 논리를 확인하세요.</div>
+  </article>
+ </div>
+ <div class="card" style="margin-top:14px"><h3>3D 조작 안내</h3><div class="grid"><div class="span-4"><p><strong>PC</strong></p><p class="muted">마우스 왼쪽 드래그: 회전<br>마우스 휠: 확대/축소<br>W/A/S/D: 관찰 위치 이동<br>단자/접촉기 클릭: 선택</p></div><div class="span-4"><p><strong>스마트폰</strong></p><p class="muted">한 손가락 드래그: 시점 회전<br>두 손가락 핀치: 확대/축소(기기 지원 시)<br>관찰점 이동 모드: 화면 터치로 시점 이동</p></div><div class="span-4"><p><strong>시각화</strong></p><p class="muted">초록색: 활성 전류 경로(개념)<br>빨간색: 오류 시나리오<br>청록색: 선택한 부품 또는 단자</p></div></div></div>
+</section>
+
+<section class="section">
+ <div class="section-head"><h2>05. 전기기능사 대비 점검표</h2><span class="sub">실습 후 스스로 확인</span></div>
+ <div class="card"><div class="checklist">
+  <label class="checkitem"><input type="checkbox"> MC-F와 MC-R을 구분하고 회로 기호를 설명할 수 있다.</label>
+  <label class="checkitem"><input type="checkbox"> 정회전과 역회전 주회로의 상순서 차이를 설명할 수 있다.</label>
+  <label class="checkitem"><input type="checkbox"> MC-F b접점을 MC-R 코일 회로에 직렬로 연결하는 이유를 설명할 수 있다.</label>
+  <label class="checkitem"><input type="checkbox"> MC-R b접점을 MC-F 코일 회로에 직렬로 연결하는 이유를 설명할 수 있다.</label>
+  <label class="checkitem"><input type="checkbox"> 정지 b접점과 자기유지 a접점의 역할을 구분할 수 있다.</label>
+  <label class="checkitem"><input type="checkbox"> 상 교체 오류와 인터록 누락의 위험을 구분할 수 있다.</label>
+ </div></div>
+ <div class="card" style="margin-top:14px"><h3>확인 문제</h3>
+  <div class="quiz-q"><strong>1. 정·역회전 회로에서 상대 접촉기의 b접점을 사용하는 주된 목적은?</strong><label><input type="radio" name="q1" value="a"> 모터 속도를 높이기 위해</label><label><input type="radio" name="q1" value="b"> 두 접촉기의 동시 투입을 방지하기 위해</label><label><input type="radio" name="q1" value="c"> 과부하 전류를 측정하기 위해</label></div>
+  <div class="quiz-q"><strong>2. 3상 유도전동기의 회전 방향을 반전시키는 일반적인 방법은?</strong><label><input type="radio" name="q2" value="a"> 세 상 모두 단선</label><label><input type="radio" name="q2" value="b"> 접지선을 제거</label><label><input type="radio" name="q2" value="c"> 전원 세 상 중 두 상을 교체</label></div>
+  <button id="gradeQuiz" class="primary">정답 확인</button> <span id="quizResult" class="muted"></span>
+ </div>
+</section>
+<p class="footer">교육용 시뮬레이터입니다. 실제 설비의 결선·정비는 전원을 차단하고 무전압을 확인한 뒤, 해당 장비의 회로도와 안전 절차에 따라 자격을 갖춘 지도자 감독하에 수행하세요. 인터록만으로 모든 위험이 제거되는 것은 아닙니다.</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let state='stop', fault=false;
+function setState(next, isFault=false){
+ state=next; fault=isFault;
+ const f=next==='fwd', r=next==='rev';
+ $('fMain').textContent=f?'닫힘':'열림'; $('fCoil').textContent=f?'ON':'OFF'; $('fNC').textContent=r?'열림':'닫힘';
+ $('rMain').textContent=r?'닫힘':'열림'; $('rCoil').textContent=r?'ON':'OFF'; $('rNC').textContent=f?'열림':'닫힘';
+ $('fPath').textContent=f?'전류 흐름: L → MC-F → 모터':'전류 흐름 없음';
+ $('rPath').textContent=r?'전류 흐름: L → MC-R(두 상 교체) → 모터':'전류 흐름 없음';
+ const s=$('logicStatus'); s.className='statusline '+(isFault?'bad':next==='stop'?'':'good');
+ s.textContent=isFault?'오류 시나리오: 인터록이 없으면 두 코일이 동시에 투입될 가능성이 있습니다. 가상 체험이며 실제 단락은 발생하지 않습니다.':f?'정회전: MC-F 코일 ON → MC-F 주접점 닫힘 → MC-F b접점 개방으로 역회전 코일 차단':r?'역회전: MC-R 코일 ON → MC-R 주접점 닫힘 → MC-R b접점 개방으로 정회전 코일 차단':'정지 상태 — 두 접촉기 코일 OFF, 양쪽 b접점은 닫힘(NC)';
+ $('sceneStatus').textContent='상태: '+(isFault?'오류 시나리오':f?'정회전':r?'역회전':'정지');
+ if(window.updateMotor) updateMotor(next,isFault);
+}
+$('fwdBtn').onclick=()=>setState('fwd'); $('revBtn').onclick=()=>setState('rev'); $('stopBtn').onclick=()=>setState('stop'); $('faultBtn').onclick=()=>setState('stop',true);
+$('gradeQuiz').onclick=()=>{let score=0;if(document.querySelector('input[name=q1]:checked')?.value==='b')score++;if(document.querySelector('input[name=q2]:checked')?.value==='c')score++;$('quizResult').textContent=` ${score}/2 정답`+(score===2?' — 훌륭합니다!':' — 해설: 인터록은 동시 투입 방지, 회전 반전은 두 상 교체입니다.');};
+$('errInterlock').onclick=()=>{$('errorStatus').className='statusline bad';$('errorStatus').textContent='인터록 누락: 정·역 코일이 동시에 투입될 수 있어 상간 단락 위험이 커집니다. 상호 b접점과 기계적 인터록을 확인하세요.';setState('stop',true);};
+$('errPhase').onclick=()=>{$('errorStatus').className='statusline bad';$('errorStatus').textContent='상 교체 오류: 의도한 방향과 반대 방향으로 회전하거나 배선이 도면과 달라질 수 있습니다. 전원 차단 후 상순서와 단자 번호를 도면과 대조하세요.';if(window.setErrorColor)setErrorColor(true);};
+$('errFix').onclick=()=>{$('errorStatus').className='statusline good';$('errorStatus').textContent='정상 시나리오 — 회로도 대조, 상호 b접점, 주회로 상 교체를 차례대로 확인하세요.';setState('stop');if(window.setErrorColor)setErrorColor(false);};
+
+let wireMode=true, selected=null, selectedEnds=[];
+const wireStatus=$('wireStatus');
+['selectF','selectR','selectU','selectV','selectW'].forEach((id,i)=>$(id).onclick=()=>{selected=['MC-F','MC-R','U','V','W'][i];wireStatus.textContent='선택 단자: '+selected+' — 다른 단자를 선택해 가상 결선 경로를 추가하세요.';if(window.highlightPart)highlightPart(selected);});
+$('clearWires').onclick=()=>{selected=null;selectedEnds=[];wireStatus.textContent='가상 결선 초기화 완료';if(window.clearCustomWires)clearCustomWires();};
+$('wireToggle').onclick=()=>{wireMode=!wireMode;$('wireToggle').classList.toggle('active',wireMode);if(window.toggleWires)toggleWires(wireMode);};
+$('viewReset').onclick=()=>window.setView&&setView('reset');$('viewTop').onclick=()=>window.setView&&setView('top');$('viewSide').onclick=()=>window.setView&&setView('side');
+$('mobileLook').onclick=()=>{document.body.classList.toggle('look-mode');$('mobileLook').classList.toggle('active');wireStatus.textContent=document.body.classList.contains('look-mode')?'관찰점 이동 모드: 화면을 드래그해 관찰 위치를 바꾸세요.':'관찰점 이동 모드 해제';if(window.setLookMode)setLookMode(document.body.classList.contains('look-mode'));};
+
+// Three.js scene: stylized training board, contactors, motor, terminal points and animated conceptual current paths.
+(function(){
+const canvas=$('scene'); if(!window.THREE){canvas.outerHTML='<div style="padding:24px;color:#ffb7c0">3D 라이브러리를 불러오지 못했습니다. 인터넷 연결 후 새로고침하세요. 이론과 회로도는 계속 이용할 수 있습니다.</div>';return;}
+const THREE=window.THREE, scene=new THREE.Scene();scene.background=new THREE.Color(0x0b1422);
+const camera=new THREE.PerspectiveCamera(48,1,.1,100);camera.position.set(7,6,9);
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.shadowMap.enabled=true;
+scene.add(new THREE.HemisphereLight(0xcce8ff,0x27334a,2.0));
+const light=new THREE.DirectionalLight(0xffffff,2.5);light.position.set(5,9,5);light.castShadow=true;scene.add(light);
+const mat=(color,metalness=0,roughness=.55)=>new THREE.MeshStandardMaterial({color,metalness,roughness});
+const mats={board:mat(0x24364c),dark:mat(0x101a29),metal:mat(0x8799ac,.65),blue:mat(0x237fbd,.2),orange:mat(0xf2a640),green:mat(0x31d69a),red:mat(0xf45168),white:mat(0xdbe7f2),cyan:mat(0x32dfff,.15)};
+const floor=new THREE.Mesh(new THREE.BoxGeometry(12,.22,7),mats.board);floor.position.y=-.12;floor.receiveShadow=true;scene.add(floor);
+const grid=new THREE.GridHelper(12,24,0x3b5875,0x23364c);grid.position.y=.01;scene.add(grid);
+function box(name,x,y,z,sx,sy,sz,material){const o=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),material);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;o.userData.name=name;scene.add(o);return o;}
+function cyl(name,x,y,z,r,h,material,rotX=0){const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,24),material);o.position.set(x,y,z);o.rotation.x=rotX;o.castShadow=true;o.userData.name=name;scene.add(o);return o;}
+function line(points,color=0x71869e,r=.025){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)));const mesh=new THREE.Mesh(new THREE.TubeGeometry(curve,24,r,6,false),mat(color,.15,.35));scene.add(mesh);mesh.userData.wire=true;return mesh;}
+const parts={};
+parts['MC-F']=box('MC-F',-2,1.05,-.8,1.15,1.5,.75,mats.blue);
+parts['MC-R']=box('MC-R',-.3,1.05,-.8,1.15,1.5,.75,mats.orange);
+for(const [name,obj] of [['MC-F',parts['MC-F']],['MC-R',parts['MC-R']]]){
+ box(name+' label',obj.position.x,1.82,-.8,.65,.18,.08,mats.white);
+ for(let i=0;i<3;i++){cyl(name+' terminal '+i,obj.position.x-.38+i*.38,1.85,-.38,.085,.08,mats.metal);cyl(name+' output '+i,obj.position.x-.38+i*.38,.25,-.38,.085,.08,mats.metal);}
+ box(name+' coil',obj.position.x,.55,-.38,.48,.35,.12,mats.dark);
+}
+const motor= new THREE.Group();motor.position.set(2.4,.95,.25);scene.add(motor);
+const body=cyl('Motor housing',0,0,0,.7,1.7,mats.metal,Math.PI/2);motor.add(body);
+const end=cyl('Motor end',0,0,.9,.55,.25,mats.dark,Math.PI/2);motor.add(end);
+const shaft=cyl('Motor shaft',0,0,1.35,.12,.8,mats.metal,Math.PI/2);motor.add(shaft);
+for(let i=0;i<12;i++){const fin=box('Motor fin',0,0,0,.9,.07,.07,mats.dark);fin.position.set(Math.cos(i*Math.PI/6)*.56,Math.sin(i*Math.PI/6)*.56,0);motor.add(fin);}
+parts.U=cyl('Terminal U',1.8,1.75,1.2,.12,.15,mats.cyan);parts.V=cyl('Terminal V',2.4,1.75,1.2,.12,.15,mats.cyan);parts.W=cyl('Terminal W',3,1.75,1.2,.12,.15,mats.cyan);
+for(let i=0;i<3;i++){line([[-4,1.7,-1.5+i*.35],[-3.4,1.7,-1.5+i*.35],[-2.4,1.7,-1.5+i*.35]],0x647b95,.035);}
+line([[-2,1.8,-.4],[-1.7,2.1,.2],[-.5,1.8,-.4]],0x35d5ff,.035);
+line([[-.3,1.8,-.4],[.4,2.1,.4],[1.5,1.8,1.2]],0xf2a640,.035);
+const currentLine=line([[-4,1.7,-1.5],[-2,1.7,-1.5],[2.4,1.7,.25]],0x31d69a,.045);currentLine.visible=false;
+let customWires=[], wiresVisible=true, errorColor=false, lookMode=false;
+window.updateMotor=(s,f)=>{motor.rotation.z=s==='fwd'?0:s==='rev'?Math.PI:0;currentLine.visible=s!=='stop'&&!f;parts['MC-F'].material=f?mats.red:(s==='fwd'?mats.green:mats.blue);parts['MC-R'].material=f?mats.red:(s==='rev'?mats.green:mats.orange);};
+window.setErrorColor=v=>{errorColor=v;parts['MC-F'].material=v?mats.red:mats.blue;parts['MC-R'].material=v?mats.red:mats.orange;};
+window.toggleWires=v=>{wiresVisible=v;scene.children.forEach(o=>{if(o.userData.wire)o.visible=v;});customWires.forEach(o=>o.visible=v);};
+window.clearCustomWires=()=>{customWires.forEach(o=>scene.remove(o));customWires=[];};
+window.highlightPart=name=>{Object.values(parts).forEach(o=>{if(o.material&&o.material.emissive)o.material.emissive.setHex(0x000000);});const o=parts[name];if(o){o.material=mats.cyan;}};
+window.setView=mode=>{if(mode==='top'){camera.position.set(0,12,.1);camera.lookAt(0,0,0);}else if(mode==='side'){camera.position.set(10,4,0);camera.lookAt(0,0,0);}else{camera.position.set(7,6,9);camera.lookAt(0,0,0);}};
+let dragging=false,lastX=0,lastY=0,theta=Math.PI/4,phi=1.05,radius=11,target=new THREE.Vector3(0,.5,0),pointerMoved=false;
+function applyCamera(){phi=Math.max(.25,Math.min(1.48,phi));radius=Math.max(5,Math.min(18,radius));camera.position.set(target.x+radius*Math.sin(phi)*Math.sin(theta),target.y+radius*Math.cos(phi),target.z+radius*Math.sin(phi)*Math.cos(theta));camera.lookAt(target);}
+canvas.addEventListener('pointerdown',e=>{dragging=true;pointerMoved=false;lastX=e.clientX;lastY=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!dragging)return;const dx=e.clientX-lastX,dy=e.clientY-lastY;lastX=e.clientX;lastY=e.clientY;pointerMoved=true;if(lookMode){target.x-=dx*.012;target.z+=dy*.012;}else{theta-=dx*.008;phi+=dy*.008;}applyCamera();});
+canvas.addEventListener('pointerup',e=>{dragging=false;if(!pointerMoved){const rect=canvas.getBoundingClientRect();const mouse=new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-((e.clientY-rect.top)/rect.height*2-1));const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);const hits=ray.intersectObjects(scene.children,true);if(hits.length){let o=hits[0].object;while(o&&!o.userData.name&&o.parent)o=o.parent;if(o&&o.userData.name){wireStatus.textContent='선택된 3D 부품: '+o.userData.name;}}}});
+canvas.addEventListener('wheel',e=>{e.preventDefault();radius+=e.deltaY*.008;applyCamera();},{passive:false});
+canvas.addEventListener('touchmove',e=>{if(e.touches.length===2){e.preventDefault();}},{passive:false});
+window.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA'].includes(document.activeElement.tagName))return;const k=e.key.toLowerCase();if(k==='w')target.z-=.25;if(k==='s')target.z+=.25;if(k==='a')target.x-=.25;if(k==='d')target.x+=.25;applyCamera();});
+function resize(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+window.addEventListener('resize',resize);resize();applyCamera();
+function animate(){requestAnimationFrame(animate);if(state==='fwd')motor.rotation.x+=.025;else if(state==='rev')motor.rotation.x-=.025;renderer.render(scene,camera);}animate();
+})();
+</script>
+</body>
+</html>
