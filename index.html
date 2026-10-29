@@ -132,6 +132,18 @@
     color:var(--text-dim);
   }
   .navlinks a:hover{color:var(--text);}
+  .navlinks a.nav-btn{
+    color:var(--safety);
+    border:1px solid var(--safety-dim);
+    padding:2px 12px;
+    border-radius:var(--radius);
+    transition:background .15s, color .15s, border-color .15s;
+  }
+  .navlinks a.nav-btn:hover{
+    background:var(--safety);
+    border-color:var(--safety);
+    color:#14171a;
+  }
   @media (max-width:720px){ .navlinks{display:none;} }
 
   /* ---------- hero ---------- */
@@ -434,6 +446,7 @@
       <a href="#control">제어 로직</a>
       <a href="#timeline">진행 단계</a>
       <a href="motor3.html">3상 유도전동기 실습</a>
+      <a href="interlock.html" class="nav-btn">인터록 회로 실습</a>
     </div>
   </nav>
 </header>
